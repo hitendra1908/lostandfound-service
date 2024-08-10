@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: lostandfounddb
+      MYSQL_USER: raboUser
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
