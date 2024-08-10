@@ -1,5 +1,8 @@
 package com.lostandfound.service;
 
+import com.lostandfound.exception.file.FileException;
+import com.lostandfound.exception.file.FileNotFoundException;
+import com.lostandfound.exception.file.UnSupportedFileFormatException;
 import com.lostandfound.model.LostItem;
 import com.lostandfound.repository.LostItemRepository;
 import com.lostandfound.util.PdfReader;
@@ -48,7 +51,8 @@ public class LostItemService {
         try {
             multipartFile.transferTo(convertedFile);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("Error while reading multipart file");
+            throw new FileException("Error while reading the input file");
         }
         return convertedFile;
     }
@@ -56,13 +60,14 @@ public class LostItemService {
     private void validatedFile(final MultipartFile file) {
         if (file == null || file.isEmpty()) {
             log.error("No file found in the request");
-            throw new RuntimeException("No file found");
+            throw new FileNotFoundException("No file found in the request");
         }
         final String extension = FilenameUtils.getExtension(file.getOriginalFilename());
 
         if (!SUPPORTED_FORMAT.contains(extension)) {
             log.error("Requested file format not supported.");
-            throw new RuntimeException(String.format("Unsupported file: %s format not supported.", extension));
+            throw new UnSupportedFileFormatException(
+                    String.format("Unsupported file: %s format not supported.", extension));
         }
     }
 

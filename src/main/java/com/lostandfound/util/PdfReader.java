@@ -1,5 +1,6 @@
 package com.lostandfound.util;
 
+import com.lostandfound.exception.file.FileException;
 import com.lostandfound.model.LostItem;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -28,9 +29,9 @@ public class PdfReader {
             lostItems =  parseText(text);
 
         } catch (IOException e) {
-            e.printStackTrace(); // TODO throw business exception
+            throw new FileException("Exception occurred while processing the file");
         }
-        log.info("{} valid lost items found in {} file",lostItems.size(),file.getName() );
+        log.info("{} valid items found in {} file",lostItems.size(),file.getName() );
         return lostItems;
     }
 

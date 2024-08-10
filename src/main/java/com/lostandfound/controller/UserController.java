@@ -34,8 +34,8 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/lost-items")
-    public List<LostItem> getAllLostItems() {
-        return lostItemService.getAllLostItems();
+    public ResponseEntity<List<LostItem>> getAllLostItems() {
+        return ResponseEntity.ok(lostItemService.getAllLostItems());
     }
 
     @Operation(summary = "Claim a lost item", description = "Claim a lost item by specifying item ID and quantity")

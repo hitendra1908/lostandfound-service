@@ -1,6 +1,6 @@
 package com.lostandfound.controller;
 
-import com.lostandfound.model.ClaimedItem;
+import com.lostandfound.dto.ClaimedItemsResponseDto;
 import com.lostandfound.service.ClaimedItemService;
 import com.lostandfound.service.LostItemService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,7 +33,7 @@ public class AdminController {
     @Operation(summary = "Upload lost items", description = "Upload a file containing lost items")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "File uploaded and processed successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid input"),
+        @ApiResponse(responseCode = "400", description = "Bad Request: Invalid file uploaded"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping(value = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -48,7 +48,8 @@ public class AdminController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("/claimed-items")
-    public List<ClaimedItem> getAllClaimedItems() {
-        return claimedItemService.getAllClaimedItems();
+    public ResponseEntity<List<ClaimedItemsResponseDto>> getAllClaimedItems() {
+        List<ClaimedItemsResponseDto> result = claimedItemService.getAllClaimedItems();
+        return ResponseEntity.ok(result);
     }
 }
