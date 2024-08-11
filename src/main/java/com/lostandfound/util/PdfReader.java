@@ -15,7 +15,7 @@ import java.util.List;
 public class PdfReader {
 
     public static List<LostItem> parsePdf(File file) {
-        List<LostItem> lostItems = new ArrayList<>();
+        List<LostItem> lostItems;
         try {
             PDDocument document = PDDocument.load(file);
 
@@ -72,12 +72,13 @@ public class PdfReader {
                 }
             }
 
+            // if any of the field itemName, quantity or place is invalid then not adding it into the result
             if (isInvalidRecord) {
                 itemName = "";
                 quantityStr = "";
                 place = "";
             }
-            // When a complete entry is found, store it in db and reset variables
+            // When a complete entry is found, then add it in result and reset variables
             if (!itemName.isEmpty() && !quantityStr.isEmpty() && !place.isEmpty()) {
 
                 createLostItemObj(itemName, quantityStr, place, lostItems);

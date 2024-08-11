@@ -40,6 +40,7 @@ public class LostItemService {
         //storing lostItems in the DB
         lostItems.forEach(this :: saveLostItem);
     }
+
     private void saveLostItem(LostItem lostItem) {
         lostItemRepository.save(lostItem);
     }

@@ -35,10 +35,12 @@ public class ClaimedItemService {
         if(quantity > lostItem.getQuantity()) {
             throw new ClaimQuantityException("Can not claim more than actual missing items");
         }
-        ClaimedItem claimedItem = new ClaimedItem();
-        claimedItem.setLostItem(lostItem);
-        claimedItem.setClaimedQuantity(quantity);
-        claimedItem.setUserId(userId);
+        ClaimedItem claimedItem = ClaimedItem.builder()
+                        .lostItem(lostItem)
+                        .claimedQuantity(quantity)
+                        .userId(userId)
+                        .build();
+
         claimedItemRepository.save(claimedItem);
     }
 
