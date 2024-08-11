@@ -66,7 +66,9 @@ public class AdminControllerIntegrationTests extends AbstractIntegrationTest{
 
         HttpEntity<LinkedMultiValueMap<String, Object>> entity = new HttpEntity<>(parameters, headers);
 
-        ResponseEntity<String> response = restTemplate.exchange(
+        ResponseEntity<String> response = restTemplate
+                .withBasicAuth(username, password)
+                .exchange(
                 BASE_URI + "/upload",
                 HttpMethod.POST,
                 entity,
@@ -97,7 +99,9 @@ public class AdminControllerIntegrationTests extends AbstractIntegrationTest{
         claimedItemRepository.save(claimedItem);
 
         //Calling endpoint under test
-        ResponseEntity<List<ClaimedItemsResponseDto>> response = restTemplate.exchange(
+        ResponseEntity<List<ClaimedItemsResponseDto>> response = restTemplate
+                .withBasicAuth(username, password)
+                .exchange(
                 BASE_URI + "/claimed-items",
                 HttpMethod.GET,
                 null,

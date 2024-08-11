@@ -55,7 +55,9 @@ public class UserControllerIntegrationTests extends AbstractIntegrationTest{
 
     @Test
     public void testGetAllLostItems() {
-        ResponseEntity<List<LostItem>> response = restTemplate.exchange(
+        ResponseEntity<List<LostItem>> response = restTemplate
+                .withBasicAuth(username, password)
+                .exchange(
                 BASE_URI + "/lost-items",
                 HttpMethod.GET,
                 null,
@@ -69,7 +71,9 @@ public class UserControllerIntegrationTests extends AbstractIntegrationTest{
 
     @Test
     public void testClaimItem() {
-        ResponseEntity<String> response = restTemplate.exchange(
+        ResponseEntity<String> response = restTemplate
+                .withBasicAuth(username, password)
+                .exchange(
                 BASE_URI +"/claim?lostItemId=2&quantity=1&userId=1001",
                 HttpMethod.POST,
                 null,

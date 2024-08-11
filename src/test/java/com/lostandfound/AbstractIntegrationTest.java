@@ -13,6 +13,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 // JPA drop and create table for testing
 @TestPropertySource(properties = {"spring.jpa.hibernate.ddl-auto=create-drop"})
 public abstract class AbstractIntegrationTest {
+    public static String username = "admin";
+    public static String password = "admin123";
 
 
 }
