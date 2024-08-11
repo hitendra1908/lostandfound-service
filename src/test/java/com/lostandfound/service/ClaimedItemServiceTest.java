@@ -1,6 +1,7 @@
 package com.lostandfound.service;
 
 import com.lostandfound.dto.ClaimedItemsResponseDto;
+import com.lostandfound.exception.claim.ClaimException;
 import com.lostandfound.exception.claim.ClaimItemNotFoundException;
 import com.lostandfound.exception.claim.ClaimQuantityException;
 import com.lostandfound.exception.claim.ClaimingUserNotFoundException;
@@ -41,6 +42,7 @@ class ClaimedItemServiceTest {
     private ClaimedItemService claimedItemService;
 
     private LostItem lostItem;
+
     @BeforeEach
     void setup() {
         lostItem = LostItem.builder()
@@ -50,6 +52,7 @@ class ClaimedItemServiceTest {
                 .place("Park")
                 .build();
     }
+
     @Test
     void shouldClaimItem_whenValidRequest() {
         Long lostItemId = 1L;
@@ -96,7 +99,7 @@ class ClaimedItemServiceTest {
         ClaimingUserNotFoundException exception = assertThrows(ClaimingUserNotFoundException.class, () ->
                 claimedItemService.claimItem(lostItemId, quantity, userId));
 
-        assertEquals("User with +" + userId + " trying to claim the item not found", exception.getMessage());
+        assertEquals("User with id "+ userId + " is not found", exception.getMessage());
     }
 
     @Test
@@ -111,7 +114,41 @@ class ClaimedItemServiceTest {
         ClaimQuantityException exception = assertThrows(ClaimQuantityException.class, () ->
                 claimedItemService.claimItem(lostItemId, quantity, userId));
 
-        assertEquals("Can not claim more than actual missing items", exception.getMessage());
+        assertEquals("Can't claim more than the actual missing items", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowClaimItemException_whenItemAlreadyClaimedByUser() {
+        Long lostItemId = 1L;
+        int claimQuantity = 2;
+        Long userId = 3L;
+
+        when(lostItemRepository.findById(lostItemId)).thenReturn(Optional.of(lostItem));
+        when(mockUserService.userExists(userId)).thenReturn(true);
+
+        claimedItemService.claimItem(lostItemId, claimQuantity, userId);
+
+        ArgumentCaptor<ClaimedItem> claimedItemCaptor = ArgumentCaptor.forClass(ClaimedItem.class);
+        verify(claimedItemRepository).save(claimedItemCaptor.capture());
+        ClaimedItem savedClaimedItem = claimedItemCaptor.getValue();
+
+        assertEquals(lostItem, savedClaimedItem.getLostItem());
+        assertEquals(claimQuantity, savedClaimedItem.getClaimedQuantity());
+        assertEquals(userId, savedClaimedItem.getUserId());
+
+        //claiming again same item
+        ClaimedItem claimedItem = ClaimedItem.builder()
+                .lostItem(lostItem)
+                .claimedQuantity(2)
+                .userId(userId)
+                .build();
+
+        when(claimedItemRepository.findByUserId(userId)).thenReturn(List.of(claimedItem));
+
+        ClaimException exception = assertThrows(ClaimException.class, () ->
+                claimedItemService.claimItem(lostItemId, claimQuantity, userId));
+
+        assertEquals("Item with this ID is already claimed by user: 3", exception.getMessage());
     }
 
     @Test

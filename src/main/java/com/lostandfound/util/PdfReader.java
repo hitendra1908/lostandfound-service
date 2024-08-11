@@ -35,13 +35,13 @@ public class PdfReader {
         return lostItems;
     }
 
-    static String itemName = "";
-    static String quantityStr = "";
-    static String place = "";
-    static boolean isInvalidRecord = false;
-
     private static List<LostItem> parseText(String text) {
         List<LostItem> lostItems = new ArrayList<>();
+        String itemName = "";
+        String quantityStr = "";
+        String place = "";
+        boolean isInvalidRecord = false;
+
         // Split the text into lines
         String[] lines = text.split("\\r?\\n");
 
@@ -71,7 +71,6 @@ public class PdfReader {
                     isInvalidRecord =true;
                 }
             }
-
             // if any of the field itemName, quantity or place is invalid then not adding it into the result
             if (isInvalidRecord) {
                 itemName = "";
@@ -83,21 +82,18 @@ public class PdfReader {
 
                 createLostItemObj(itemName, quantityStr, place, lostItems);
 
-                resetFlags();
+                // Reset the variables for the next entry
+                itemName = "";
+                quantityStr = "";
+                place = "";
+                isInvalidRecord = false;
             }
         }
         return lostItems;
     }
 
-    private static void resetFlags() {
-        // Reset the variables for the next entry
-        itemName = "";
-        quantityStr = "";
-        place = "";
-        isInvalidRecord = false;
-    }
-
-    private static void createLostItemObj(String itemName, String quantityStr, String place, List<LostItem> lostItems) {
+    private static void createLostItemObj(String itemName, String quantityStr,
+                                          String place, List<LostItem> lostItems) {
         LostItem item = LostItem.builder()
                 .itemName(itemName)
                 .quantity(Integer.parseInt(quantityStr))

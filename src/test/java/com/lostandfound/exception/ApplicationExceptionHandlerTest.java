@@ -1,8 +1,10 @@
 package com.lostandfound.exception;
 
+import com.lostandfound.exception.claim.ClaimException;
 import com.lostandfound.exception.claim.ClaimItemNotFoundException;
 import com.lostandfound.exception.claim.ClaimQuantityException;
 import com.lostandfound.exception.claim.ClaimingUserNotFoundException;
+import com.lostandfound.exception.file.FileException;
 import com.lostandfound.exception.file.FileNotFoundException;
 import com.lostandfound.exception.file.UnSupportedFileFormatException;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,6 +45,16 @@ public class ApplicationExceptionHandlerTest {
     }
 
     @Test
+    void shouldHandleFileException() {
+        FileException exception = new FileException("File Exception");
+        ProblemDetail problemDetail = exceptionHandler.handleFileException(exception);
+
+        assertThat(problemDetail.getTitle()).isEqualTo("Exception while processing file");
+        assertThat(problemDetail.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(problemDetail.getDetail()).isEqualTo("File Exception");
+    }
+
+    @Test
     void shouldHandleClaimQuantityException() {
         ClaimQuantityException exception = new ClaimQuantityException("Wrong Quantity");
         ProblemDetail problemDetail = exceptionHandler.handleClaimException(exception);
@@ -67,9 +79,19 @@ public class ApplicationExceptionHandlerTest {
         ClaimItemNotFoundException exception = new ClaimItemNotFoundException("Wrong itemId");
         ProblemDetail problemDetail = exceptionHandler.handleClaimException(exception);
 
-        assertThat(problemDetail.getTitle()).isEqualTo("Claim not possible: Wring itemId");
+        assertThat(problemDetail.getTitle()).isEqualTo("Claim not possible: Wrong itemId");
         assertThat(problemDetail.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(problemDetail.getDetail()).isEqualTo("Wrong itemId");
+    }
+
+    @Test
+    void shouldHandleClaimException() {
+        ClaimException exception = new ClaimException("Something went wrong while claiming");
+        ProblemDetail problemDetail = exceptionHandler.handleClaimException(exception);
+
+        assertThat(problemDetail.getTitle()).isEqualTo("Exception while claiming the item");
+        assertThat(problemDetail.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(problemDetail.getDetail()).isEqualTo("Something went wrong while claiming");
     }
 
     @Test

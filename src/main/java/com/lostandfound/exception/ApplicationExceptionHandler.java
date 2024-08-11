@@ -32,8 +32,8 @@ public class ApplicationExceptionHandler {
         return switch (exception) {
             case ClaimQuantityException e -> createProblemDetail(e, HttpStatus.BAD_REQUEST, "Claim not possible : Wrong Quantity");
             case ClaimingUserNotFoundException e -> createProblemDetail(e, HttpStatus.BAD_REQUEST, "Claim not possible: Wrong userId");
-            case ClaimItemNotFoundException e -> createProblemDetail(e, HttpStatus.BAD_REQUEST, "Claim not possible: Wring itemId");
-            default -> createProblemDetail(exception, HttpStatus.INTERNAL_SERVER_ERROR, "Exception while claiming the item");
+            case ClaimItemNotFoundException e -> createProblemDetail(e, HttpStatus.BAD_REQUEST, "Claim not possible: Wrong itemId");
+            default -> createProblemDetail(exception, HttpStatus.BAD_REQUEST, "Exception while claiming the item");
         };
     }
 

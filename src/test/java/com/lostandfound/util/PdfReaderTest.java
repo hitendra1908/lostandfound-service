@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -20,7 +21,11 @@ public class PdfReaderTest {
 
     @Test
     void shouldParsePdfSuccessfully_WhenValidFile() {
-        File file = new File("src/test/resources/SampleFile_LostAndFound.pdf");
+        String resourceName = "SampleFile_LostAndFound.pdf";
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(Objects.requireNonNull(classLoader.getResource(resourceName)).getFile());
+
         List<LostItem> result = PdfReader.parsePdf(file);
 
         assertNotNull(result);
@@ -32,7 +37,7 @@ public class PdfReaderTest {
     }
 
     @Test
-    void shouldThrowFileException_WhenIOException() throws IOException {
+    void shouldThrowFileException_WhenIOException() {
         File file = mock(File.class);
 
         try (MockedStatic<PDDocument> pdDocumentMockedStatic = Mockito.mockStatic(PDDocument.class)) {
@@ -45,7 +50,11 @@ public class PdfReaderTest {
 
     @Test
     void shouldParseOnlyValidRecord_WhenFileHasFewInvalidRecords() {
-        File file = new File("src/test/resources/Invalid_SampleFile_LostAndFound.pdf");
+        String resourceName = "Invalid_SampleFile_LostAndFound.pdf";
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(Objects.requireNonNull(classLoader.getResource(resourceName)).getFile());
+
         List<LostItem> result = PdfReader.parsePdf(file);
 
         assertNotNull(result);
