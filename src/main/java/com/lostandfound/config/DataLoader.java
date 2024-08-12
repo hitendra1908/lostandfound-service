@@ -13,6 +13,9 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Class to load default users with Roles Admin and User.
+ **/
 @Component
 public class DataLoader implements CommandLineRunner {
 
