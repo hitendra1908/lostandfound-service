@@ -13,6 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 public class ClaimedItemsResponseDto {
     private long userId;
-    private String userName;
+    private String name;
     List<ItemWithClaimedQuantityDto> claimedItems;
 }

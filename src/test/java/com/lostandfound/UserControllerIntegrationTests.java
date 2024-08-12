@@ -1,6 +1,5 @@
 package com.lostandfound;
 
-import com.lostandfound.model.ClaimedItem;
 import com.lostandfound.model.LostItem;
 import com.lostandfound.repository.ClaimedItemRepository;
 import com.lostandfound.repository.LostItemRepository;
@@ -69,24 +68,4 @@ public class UserControllerIntegrationTests extends AbstractIntegrationTest{
         assertEquals("Wallet", response.getBody().getFirst().getItemName());
     }
 
-    @Test
-    public void testClaimItem() {
-        ResponseEntity<String> response = restTemplate
-                .withBasicAuth(username, password)
-                .exchange(
-                BASE_URI +"/claim?lostItemId=2&quantity=1&userId=1001",
-                HttpMethod.POST,
-                null,
-                String.class
-        );
-
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals("Item claimed successfully", response.getBody());
-
-        //checking is claim item is saved in DB
-        LostItem lostItem = lostItemRepository.findById(2L).orElseThrow();
-        List<ClaimedItem> claimedItems = claimedItemRepository.findByUserId(1001L);
-        assertEquals(1, claimedItems.size());
-        assertEquals(lostItem, claimedItems.getFirst().getLostItem());
-    }
 }

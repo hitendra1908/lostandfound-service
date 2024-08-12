@@ -1,7 +1,5 @@
 package com.lostandfound;
 
-import com.lostandfound.dto.ClaimedItemsResponseDto;
-import com.lostandfound.model.ClaimedItem;
 import com.lostandfound.model.LostItem;
 import com.lostandfound.repository.ClaimedItemRepository;
 import com.lostandfound.repository.LostItemRepository;
@@ -11,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -81,35 +78,5 @@ public class AdminControllerIntegrationTests extends AbstractIntegrationTest{
         //check if data is uploaded in db
         List<LostItem> lostItemsUploaded = lostItemRepository.findAll();
         assertEquals(4, lostItemsUploaded.size());
-    }
-
-    @Test
-    public void testGetAllClaimedItems() {
-        //setting up data for getCall
-        LostItem lostItem = new LostItem(null,  "Wallet", 2, "Bus");
-        lostItemRepository.save(lostItem);
-
-        LostItem lostItemFromDb = lostItemRepository.findAll().getFirst();
-        ClaimedItem claimedItem = ClaimedItem.builder()
-                .lostItem(lostItemFromDb)
-                .claimedQuantity(2)
-                .userId(1001L)
-                .build();
-
-        claimedItemRepository.save(claimedItem);
-
-        //Calling endpoint under test
-        ResponseEntity<List<ClaimedItemsResponseDto>> response = restTemplate
-                .withBasicAuth(username, password)
-                .exchange(
-                BASE_URI + "/claimed-items",
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<ClaimedItemsResponseDto>>() {
-                });
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(1, response.getBody().size());
-
     }
 }

@@ -34,8 +34,13 @@ public class UserService {
             throw new InvalidUserException("Invalid User - User request can't be empty");
         }
 
+        String name = userRequestDto.getName();
         String username = userRequestDto.getUsername();
         String password = userRequestDto.getPassword();
+
+        if (name == null || name.length() < 2) {
+            throw new InvalidUserException("Invalid name - name should be minimum of 2 characters");
+        }
 
         if (username == null || username.length() < 2) {
             throw new InvalidUserException("Invalid username - username should be minimum of 2 characters");

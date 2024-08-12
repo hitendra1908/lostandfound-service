@@ -1,5 +1,6 @@
 package com.lostandfound.service;
 
+import com.lostandfound.client.UserServiceRestClient;
 import com.lostandfound.dto.ClaimedItemsResponseDto;
 import com.lostandfound.dto.ItemWithClaimedQuantityDto;
 import com.lostandfound.exception.claim.ClaimException;
@@ -11,12 +12,14 @@ import com.lostandfound.model.LostItem;
 import com.lostandfound.repository.ClaimedItemRepository;
 import com.lostandfound.repository.LostItemRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ClaimedItemService {
@@ -25,7 +28,7 @@ public class ClaimedItemService {
 
     private final LostItemRepository lostItemRepository;
 
-    private final MockUserService mockUserService;
+    private final UserServiceRestClient userServiceClient;
 
     public void claimItem(Long lostItemId, int quantity, Long userId) {
         LostItem lostItem = findLostItem(lostItemId);
@@ -52,9 +55,8 @@ public class ClaimedItemService {
     }
 
     private void validateUser(Long userId) {
-        if (!mockUserService.userExists(userId)) {
-            throw new ClaimingUserNotFoundException("User with id " + userId + " is not found");
-        }
+        // checking if name is available in downstream api
+        getNameFromExternalUserService(userId);
     }
 
     private void validateClaimQuantity(int quantity, LostItem lostItem) {
@@ -88,14 +90,16 @@ public class ClaimedItemService {
     }
 
     private ClaimedItemsResponseDto createClaimedItemsResponse(Long userId, List<ClaimedItem> claimedItems) {
-        String userName = mockUserService.getUserNameById(userId);
+        final String name = getNameFromExternalUserService(userId);
+
+        log.info("response from UserService: "+name);
         List<ItemWithClaimedQuantityDto> itemWithClaimedQuantityList = claimedItems.stream()
                 .map(this::mapToItemWithClaimedQuantityDto)
                 .collect(Collectors.toList());
 
         return ClaimedItemsResponseDto.builder()
                 .userId(userId)
-                .userName(userName)
+                .name(name)
                 .claimedItems(itemWithClaimedQuantityList)
                 .build();
     }
@@ -107,4 +111,7 @@ public class ClaimedItemService {
                 .build();
     }
 
+    private String getNameFromExternalUserService(Long userId) {
+        return userServiceClient.getNameById(userId);
+    }
 }

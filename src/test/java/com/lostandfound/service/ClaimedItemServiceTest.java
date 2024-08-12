@@ -1,5 +1,6 @@
 package com.lostandfound.service;
 
+import com.lostandfound.client.UserServiceRestClient;
 import com.lostandfound.dto.ClaimedItemsResponseDto;
 import com.lostandfound.exception.claim.ClaimException;
 import com.lostandfound.exception.claim.ClaimItemNotFoundException;
@@ -23,6 +24,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,7 +38,7 @@ class ClaimedItemServiceTest {
     private LostItemRepository lostItemRepository;
 
     @Mock
-    private MockUserService mockUserService;
+    private UserServiceRestClient userServiceRestClient;
 
     @InjectMocks
     private ClaimedItemService claimedItemService;
@@ -60,7 +62,7 @@ class ClaimedItemServiceTest {
         Long userId = 3L;
 
         when(lostItemRepository.findById(lostItemId)).thenReturn(Optional.of(lostItem));
-        when(mockUserService.userExists(userId)).thenReturn(true);
+        when(userServiceRestClient.getNameById(userId)).thenReturn("User1");
 
         claimedItemService.claimItem(lostItemId, claimQuantity, userId);
 
@@ -94,12 +96,12 @@ class ClaimedItemServiceTest {
         Long userId = 3L;
 
         when(lostItemRepository.findById(lostItemId)).thenReturn(Optional.of(lostItem));
-        when(mockUserService.userExists(userId)).thenReturn(false);
+        when(userServiceRestClient.getNameById(userId)).thenThrow(new ClaimingUserNotFoundException("user not found"));
 
         ClaimingUserNotFoundException exception = assertThrows(ClaimingUserNotFoundException.class, () ->
                 claimedItemService.claimItem(lostItemId, quantity, userId));
 
-        assertEquals("User with id "+ userId + " is not found", exception.getMessage());
+        assertEquals("user not found", exception.getMessage());
     }
 
     @Test
@@ -109,7 +111,7 @@ class ClaimedItemServiceTest {
         Long userId = 3L;
 
         when(lostItemRepository.findById(lostItemId)).thenReturn(Optional.of(lostItem));
-        when(mockUserService.userExists(userId)).thenReturn(true);
+        when(userServiceRestClient.getNameById(userId)).thenReturn("User1");
 
         ClaimQuantityException exception = assertThrows(ClaimQuantityException.class, () ->
                 claimedItemService.claimItem(lostItemId, quantity, userId));
@@ -124,7 +126,7 @@ class ClaimedItemServiceTest {
         Long userId = 3L;
 
         when(lostItemRepository.findById(lostItemId)).thenReturn(Optional.of(lostItem));
-        when(mockUserService.userExists(userId)).thenReturn(true);
+        when(userServiceRestClient.getNameById(userId)).thenReturn("User1");
 
         claimedItemService.claimItem(lostItemId, claimQuantity, userId);
 
@@ -182,8 +184,8 @@ class ClaimedItemServiceTest {
                 .build();
 
         when(claimedItemRepository.findAll()).thenReturn(Arrays.asList(claimedItem1, claimedItem2, claimedItem3));
-        when(mockUserService.getUserNameById(userId1)).thenReturn("User1");
-        when(mockUserService.getUserNameById(userId2)).thenReturn("User2");
+        when(userServiceRestClient.getNameById(userId1)).thenReturn("User1");
+        when(userServiceRestClient.getNameById(userId2)).thenReturn("User2");
 
         List<ClaimedItemsResponseDto> result = claimedItemService.getAllClaimedItems();
 
@@ -191,14 +193,14 @@ class ClaimedItemServiceTest {
 
         ClaimedItemsResponseDto user1Dto = result.getFirst();
         assertEquals(userId1, user1Dto.getUserId());
-        assertEquals("User1", user1Dto.getUserName());
+        assertEquals("User1", user1Dto.getName());
         assertEquals(2, user1Dto.getClaimedItems().size());
         assertEquals(lostItem, user1Dto.getClaimedItems().getFirst().getLostItem());
         assertEquals(lostItemLaptop, user1Dto.getClaimedItems().get(1).getLostItem());
 
         ClaimedItemsResponseDto user2Dto = result.get(1);
         assertEquals(userId2, user2Dto.getUserId());
-        assertEquals("User2", user2Dto.getUserName());
+        assertEquals("User2", user2Dto.getName());
         assertEquals(1, user2Dto.getClaimedItems().size());
         assertEquals(lostItem, user1Dto.getClaimedItems().getFirst().getLostItem());
     }

@@ -4,6 +4,7 @@ import com.lostandfound.exception.claim.ClaimException;
 import com.lostandfound.exception.claim.ClaimItemNotFoundException;
 import com.lostandfound.exception.claim.ClaimQuantityException;
 import com.lostandfound.exception.claim.ClaimingUserNotFoundException;
+import com.lostandfound.exception.claim.DownstreamServiceConnectionException;
 import com.lostandfound.exception.file.FileException;
 import com.lostandfound.exception.file.FileNotFoundException;
 import com.lostandfound.exception.file.UnSupportedFileFormatException;
@@ -15,6 +16,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Slf4j
@@ -62,6 +64,18 @@ public class ApplicationExceptionHandler {
     public ProblemDetail handleAccessDeniedException(DataIntegrityViolationException exception) {
         log.error("Bad Request ", exception);
         return createProblemDetail(exception, HttpStatus.BAD_REQUEST, "Invalid request");
+    }
+
+    @ExceptionHandler(DownstreamServiceConnectionException.class)
+    public ProblemDetail handleDownstreamServiceConnectionException(DownstreamServiceConnectionException exception) {
+        log.error("Bad Connection ", exception);
+        return createProblemDetail(exception, HttpStatus.INTERNAL_SERVER_ERROR, "Error from downstream service");
+    }
+
+    @ExceptionHandler(ResourceAccessException.class)
+    public ProblemDetail handleDownstreamServiceConnectionException(ResourceAccessException exception) {
+        log.error("Bad Connection ", exception);
+        return createProblemDetail(exception, HttpStatus.SERVICE_UNAVAILABLE, "Connection to downstream service failed");
     }
 
     @ExceptionHandler(Exception.class)
