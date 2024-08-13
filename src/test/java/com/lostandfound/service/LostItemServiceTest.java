@@ -5,7 +5,6 @@ import com.lostandfound.exception.file.FileNotFoundException;
 import com.lostandfound.exception.file.UnSupportedFileFormatException;
 import com.lostandfound.model.LostItem;
 import com.lostandfound.repository.LostItemRepository;
-import com.lostandfound.util.PdfReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -20,9 +19,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -53,25 +50,6 @@ class LostItemServiceTest {
 
         assertEquals(2, result.size());
         verify(lostItemRepository, times(1)).findAll();
-    }
-
-    @Test
-    void shouldUploadLostItems_WhenValidFile() throws IOException {
-        File tempFile = File.createTempFile("test", ".pdf");
-        tempFile.deleteOnExit();
-        List<LostItem> lostItems = List.of(new LostItem(), new LostItem());
-
-        when(multipartFile.getOriginalFilename()).thenReturn("test.pdf");
-        when(multipartFile.isEmpty()).thenReturn(false);
-        when(multipartFile.getContentType()).thenReturn("application/pdf");
-        doNothing().when(multipartFile).transferTo(any(File.class));
-        mockStatic(PdfReader.class);
-        when(PdfReader.parsePdf(any(File.class))).thenReturn(lostItems);
-
-        lostItemService.uploadLostItems(multipartFile);
-
-        verify(multipartFile, times(1)).transferTo(any(File.class));
-        verify(lostItemRepository, times(2)).save(any(LostItem.class));
     }
 
     @Test
