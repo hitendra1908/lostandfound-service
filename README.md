@@ -59,3 +59,6 @@ There is an endpoint for ROLE_ADMIN, where admin can create more user with diffe
 ## Swagger Documentation
 Swagger docs will be available at : http://localhost:8080/swagger-ui/index.html
 You can also download Json & Yaml file from http://localhost:8080/v3/api-docs and http://localhost:8080/v3/api-docs.yaml respectively.
+
+## Test Endpoint via Postman
+Postman collection is available at "docs/postman" folder to test endpoint via Postman.
