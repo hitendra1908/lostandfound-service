@@ -1,9 +1,8 @@
 package com.lostandfound.dto;
 
-import com.lostandfound.model.Roles;
 import lombok.Data;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 public class UserRequestDto {
@@ -14,5 +13,5 @@ public class UserRequestDto {
 
     private String password;
 
-    private Set<Roles> roles;
+    private List<String> roles;
 }

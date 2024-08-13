@@ -8,11 +8,13 @@ import com.lostandfound.exception.claim.DownstreamServiceConnectionException;
 import com.lostandfound.exception.file.FileException;
 import com.lostandfound.exception.file.FileNotFoundException;
 import com.lostandfound.exception.file.UnSupportedFileFormatException;
+import com.lostandfound.exception.user.InvalidRoleException;
 import com.lostandfound.exception.user.InvalidUserException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -47,6 +49,11 @@ public class ApplicationExceptionHandler {
         log.error("Invalid User: ", exception);
         return createProblemDetail(exception, HttpStatus.BAD_REQUEST, "Invalid User request");
     }
+    @ExceptionHandler(InvalidRoleException.class)
+    public ProblemDetail handleInvalidUserException(InvalidRoleException exception) {
+        log.error("Invalid Role: ", exception);
+        return createProblemDetail(exception, HttpStatus.BAD_REQUEST, "Invalid Role in the request");
+    }
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ProblemDetail handleNoResourceFoundException(NoResourceFoundException exception) {
@@ -66,6 +73,12 @@ public class ApplicationExceptionHandler {
         return createProblemDetail(exception, HttpStatus.BAD_REQUEST, "Invalid request");
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ProblemDetail handleAccessDeniedException(HttpMessageNotReadableException exception) {
+        log.error("Bad Request ", exception);
+        return createProblemDetail(exception, HttpStatus.BAD_REQUEST, "Invalid request");
+    }
+
     @ExceptionHandler(DownstreamServiceConnectionException.class)
     public ProblemDetail handleDownstreamServiceConnectionException(DownstreamServiceConnectionException exception) {
         log.error("Bad Connection ", exception);
@@ -75,7 +88,7 @@ public class ApplicationExceptionHandler {
     @ExceptionHandler(ResourceAccessException.class)
     public ProblemDetail handleDownstreamServiceConnectionException(ResourceAccessException exception) {
         log.error("Bad Connection ", exception);
-        return createProblemDetail(exception, HttpStatus.SERVICE_UNAVAILABLE, "Connection to downstream service failed");
+        return createProblemDetail(exception, HttpStatus.SERVICE_UNAVAILABLE, "Connection to user-service failed");
     }
 
     @ExceptionHandler(Exception.class)
