@@ -46,8 +46,8 @@ public class AdminController {
     @PostMapping(value = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<String> uploadLostItems(@RequestParam("file") MultipartFile file) {
-        lostItemService.uploadLostItems(file);
-        return ResponseEntity.status(HttpStatus.CREATED).body("File uploaded and processed successfully");
+        String uploadMessage = lostItemService.uploadLostItems(file);
+        return ResponseEntity.status(HttpStatus.CREATED).body("File uploaded: "+uploadMessage);
     }
 
     @Operation(summary = "Get all claimed items", description = "Retrieve a list of all claimed items")

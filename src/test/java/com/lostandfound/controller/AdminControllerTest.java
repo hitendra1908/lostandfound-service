@@ -57,14 +57,14 @@ class AdminControllerTest {
         MockMultipartFile file = new MockMultipartFile("file", "test.pdf",
                 "application/pdf", fileContent);
 
-        doNothing().when(lostItemService).uploadLostItems(any());
+        when(lostItemService.uploadLostItems(any())).thenReturn("Number of records parsed and saved in DB = 1");
 
         mockMvc.perform(multipart("/api/admin/upload")
                         .file(file)
                         .with(csrf())
                         .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andExpect(status().isCreated())
-                .andExpect(content().string("File uploaded and processed successfully"));
+                .andExpect(content().string("File uploaded: Number of records parsed and saved in DB = 1"));
 
         verify(lostItemService, times(1)).uploadLostItems(any());
     }

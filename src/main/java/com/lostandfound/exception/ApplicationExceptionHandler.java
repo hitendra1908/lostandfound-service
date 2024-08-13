@@ -7,6 +7,7 @@ import com.lostandfound.exception.claim.ClaimingUserNotFoundException;
 import com.lostandfound.exception.claim.DownstreamServiceConnectionException;
 import com.lostandfound.exception.file.FileException;
 import com.lostandfound.exception.file.FileNotFoundException;
+import com.lostandfound.exception.file.NoValidItemFoundException;
 import com.lostandfound.exception.file.UnSupportedFileFormatException;
 import com.lostandfound.exception.user.InvalidRoleException;
 import com.lostandfound.exception.user.InvalidUserException;
@@ -30,6 +31,7 @@ public class ApplicationExceptionHandler {
         return switch (exception) {
             case FileNotFoundException e -> createProblemDetail(e, HttpStatus.BAD_REQUEST, "File not found");
             case UnSupportedFileFormatException e -> createProblemDetail(e, HttpStatus.BAD_REQUEST, "Wrong file format");
+            case NoValidItemFoundException e -> createProblemDetail(e, HttpStatus.BAD_REQUEST, "Not Valid File");
             default -> createProblemDetail(exception, HttpStatus.INTERNAL_SERVER_ERROR, "Exception while processing file");
         };
     }

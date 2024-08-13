@@ -2,6 +2,7 @@ package com.lostandfound.service;
 
 import com.lostandfound.exception.file.FileException;
 import com.lostandfound.exception.file.FileNotFoundException;
+import com.lostandfound.exception.file.NoValidItemFoundException;
 import com.lostandfound.exception.file.UnSupportedFileFormatException;
 import com.lostandfound.model.LostItem;
 import com.lostandfound.repository.LostItemRepository;
@@ -29,7 +30,7 @@ public class LostItemService {
         return lostItemRepository.findAll();
     }
 
-    public void uploadLostItems(MultipartFile file) {
+    public String uploadLostItems(MultipartFile file) {
         validatedFile(file);
         File fileToUpload = convertMultipartFileToFile(file);
         List<LostItem> lostItems = PdfReader.parsePdf(fileToUpload);
@@ -37,12 +38,16 @@ public class LostItemService {
         fileToUpload.delete();
 
         //storing lostItems in the DB
-        lostItems.forEach(this :: saveLostItem);
+        if(lostItems.isEmpty()) {
+            log.error("No valid records are found in the file");
+            throw new NoValidItemFoundException("Uploaded file doesn't have any valid record.");
+        }
+        List<LostItem> savedItems = lostItemRepository.saveAll(lostItems);
+
+        return "Number of records parsed and saved in DB = "+savedItems.size();
+
     }
 
-    private void saveLostItem(LostItem lostItem) {
-        lostItemRepository.save(lostItem);
-    }
 
 
     private File convertMultipartFileToFile(MultipartFile multipartFile) {

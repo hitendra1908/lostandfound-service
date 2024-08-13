@@ -73,7 +73,7 @@ public class AdminControllerIntegrationTests extends AbstractIntegrationTest{
                 "");
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals("File uploaded and processed successfully", response.getBody());
+        assertEquals("File uploaded: Number of records parsed and saved in DB = 4", response.getBody());
 
         //check if data is uploaded in db
         List<LostItem> lostItemsUploaded = lostItemRepository.findAll();
