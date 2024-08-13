@@ -59,10 +59,3 @@ There is an endpoint for ROLE_ADMIN, where admin can create more user with diffe
 ## Swagger Documentation
 Swagger docs will be available at : http://localhost:8080/swagger-ui/index.html
 You can also download Json & Yaml file from http://localhost:8080/v3/api-docs and http://localhost:8080/v3/api-docs.yaml respectively.
-
-TODO
-Add details about logout
-Add role info - done
-user request dto -remove role name, only keep id - done
-create readme for user-service - > done
-admin and claim for all users but user can claim for self only

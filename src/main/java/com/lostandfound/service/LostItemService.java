@@ -33,7 +33,6 @@ public class LostItemService {
         validatedFile(file);
         File fileToUpload = convertMultipartFileToFile(file);
         List<LostItem> lostItems = PdfReader.parsePdf(fileToUpload);
-        //TODO check if we need this and how to test?
         //deleting the temp file after use
         fileToUpload.delete();
 
